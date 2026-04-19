@@ -5,7 +5,7 @@ const TEAM_MEMBERS = [
 const FRONTEND_REPO_URL = "https://github.com/tanyuzhou/music-share-frontend";
 const BACKEND_REPO_URL = "https://github.com/tanyuzhou/music-share-backend";
 const FRONTEND_DEPLOY_URL = "https://music-share-frontend.vercel.app";
-const BACKEND_DEPLOY_URL = "https://music-share-backend.onrender.com";
+const BACKEND_DEPLOY_URL = "https://music-share-backend-t0k4.onrender.com";
 
 export default function AboutPage() {
   return (
@@ -77,9 +77,6 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-        <p className="error-text" style={{ marginTop: 12 }}>
-          Reminder: replace both <code>example.com</code> URLs with real deployed links before submitting
-        </p>
       </div>
     </section>
   );
