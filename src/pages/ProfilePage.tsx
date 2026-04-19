@@ -24,15 +24,66 @@ export default function ProfilePage() {
   const [message, setMessage] = useState("");
   const [saveFeedback, setSaveFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Pagination states
+  const PAGE_SIZE = 5;
+  const [favMeta, setFavMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [revMeta, setRevMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [followerMeta, setFollowerMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [followingMeta, setFollowingMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [playlistTotal, setPlaylistTotal] = useState(0);
+
+  const loadFavorites = async (page: number) => {
+    const resp = await api.getMyFavorites(page, PAGE_SIZE);
+    if (resp.code === 0) {
+      setFavorites(resp.data.list);
+      setFavMeta({
+        page: resp.data.page,
+        totalPages: Math.ceil(resp.data.total / PAGE_SIZE) || 1,
+        total: resp.data.total
+      });
+    }
+  };
+
+  const loadReviews = async (page: number) => {
+    const resp = await api.getMyReviews(page, PAGE_SIZE);
+    if (resp.code === 0) {
+      setReviews(resp.data.list);
+      setRevMeta({
+        page: resp.data.page,
+        totalPages: Math.ceil(resp.data.total / PAGE_SIZE) || 1,
+        total: resp.data.total
+      });
+    }
+  };
+
+  const loadFollowers = async (userId: string, page: number) => {
+    const resp = await api.getFollowers(userId, page, PAGE_SIZE);
+    if (resp.code === 0) {
+      setFollowers(resp.data.list);
+      setFollowerMeta({
+        page: resp.data.page,
+        totalPages: Math.ceil(resp.data.total / PAGE_SIZE) || 1,
+        total: resp.data.total
+      });
+    }
+  };
+
+  const loadFollowing = async (userId: string, page: number) => {
+    const resp = await api.getFollowing(userId, page, PAGE_SIZE);
+    if (resp.code === 0) {
+      setFollowing(resp.data.list);
+      setFollowingMeta({
+        page: resp.data.page,
+        totalPages: Math.ceil(resp.data.total / PAGE_SIZE) || 1,
+        total: resp.data.total
+      });
+    }
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      const [meResp, favoritesResp, playlistsResp, reviewsResp] = await Promise.all([
-        api.getMyProfile(),
-        api.getMyFavorites(),
-        api.getMyPlaylists(),
-        api.getMyReviews(1, 10),
-      ]);
+      const meResp = await api.getMyProfile();
 
       if (meResp.code !== 0) {
         setLoading(false);
@@ -41,11 +92,6 @@ export default function ProfilePage() {
       }
 
       const meUser = meResp.data.user;
-      const [followersResp, followingResp] = await Promise.all([
-        api.getFollowers(meUser.id),
-        api.getFollowing(meUser.id),
-      ]);
-
       setUser(meUser);
       setForm({
         displayName: meUser.displayName || "",
@@ -55,11 +101,19 @@ export default function ProfilePage() {
         favoritesVisibility: meUser.favoritesVisibility || "PRIVATE",
       });
 
-      if (favoritesResp.code === 0) setFavorites(favoritesResp.data.list);
-      if (playlistsResp.code === 0) setPlaylists(playlistsResp.data.list);
-      if (reviewsResp.code === 0) setReviews(reviewsResp.data.list);
-      if (followersResp.code === 0) setFollowers(followersResp.data.list);
-      if (followingResp.code === 0) setFollowing(followingResp.data.list);
+      await Promise.all([
+        loadFavorites(1),
+        loadReviews(1),
+        loadFollowers(meUser.id, 1),
+        loadFollowing(meUser.id, 1),
+        (async () => {
+          const playlistsResp = await api.getMyPlaylists();
+          if (playlistsResp.code === 0) {
+            setPlaylists(playlistsResp.data.list);
+            setPlaylistTotal(playlistsResp.data.total);
+          }
+        })(),
+      ]);
 
       setLoading(false);
     };
@@ -67,10 +121,7 @@ export default function ProfilePage() {
     void loadData();
   }, []);
 
-  const reloadMyReviews = async () => {
-    const reviewsResp = await api.getMyReviews(1, 10);
-    if (reviewsResp.code === 0) setReviews(reviewsResp.data.list);
-  };
+  const reloadMyReviews = () => loadReviews(revMeta.page);
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,23 +202,23 @@ export default function ProfilePage() {
             <div className="card-title">Stats</div>
             <div className="stat-row">
               <div className="stat-pill">
-                <div className="stat-value">{favorites.length}</div>
+                <div className="stat-value">{favMeta.total}</div>
                 <div className="stat-label">Favorites</div>
               </div>
               <div className="stat-pill">
-                <div className="stat-value">{playlists.length}</div>
+                <div className="stat-value">{playlistTotal}</div>
                 <div className="stat-label">Playlists</div>
               </div>
               <div className="stat-pill">
-                <div className="stat-value">{reviews.length}</div>
+                <div className="stat-value">{revMeta.total}</div>
                 <div className="stat-label">Reviews</div>
               </div>
               <div className="stat-pill">
-                <div className="stat-value">{followers.length}</div>
+                <div className="stat-value">{followerMeta.total}</div>
                 <div className="stat-label">Followers</div>
               </div>
               <div className="stat-pill">
-                <div className="stat-value">{following.length}</div>
+                <div className="stat-value">{followingMeta.total}</div>
                 <div className="stat-label">Following</div>
               </div>
             </div>
@@ -237,19 +288,43 @@ export default function ProfilePage() {
 
           {/* My Favorites */}
           <div className="card">
-            <div className="card-title">My Favorites (latest 5)</div>
+            <div className="card-header">
+              <div className="card-title">My Favorites</div>
+              <div className="pagination-controls">
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={favMeta.page <= 1}
+                  onClick={() => void loadFavorites(favMeta.page - 1)}
+                >
+                  &lt;
+                </button>
+                <span>{favMeta.page}/{favMeta.totalPages}</span>
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={favMeta.page >= favMeta.totalPages}
+                  onClick={() => void loadFavorites(favMeta.page + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
             <div className="track-list">
-              {favorites.slice(0, 5).map((item) => (
+              {favorites.map((item) => (
                 <div key={item.id} className="track-row">
-                  <div className="track-info">
-                    <Link
-                      to={`/details/${item.appleTrackId}`}
-                      className="track-name"
-                      style={{ color: "var(--fg-primary)" }}
-                    >
-                      {item.trackName}
-                    </Link>
-                    <div className="track-meta">{item.artistName}</div>
+                  <div className="track-main">
+                    {item.artworkUrl100 && (
+                      <img className="cover" src={item.artworkUrl100} alt={item.trackName} />
+                    )}
+                    <div className="track-info">
+                      <Link
+                        to={`/details/${item.appleTrackId}`}
+                        className="track-name"
+                        style={{ color: "var(--fg-primary)" }}
+                      >
+                        {item.trackName}
+                      </Link>
+                      <div className="track-meta">{item.artistName}</div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -259,7 +334,26 @@ export default function ProfilePage() {
 
           {/* My Reviews */}
           <div className="card">
-            <div className="card-title">My Reviews</div>
+            <div className="card-header">
+              <div className="card-title">My Reviews</div>
+              <div className="pagination-controls">
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={revMeta.page <= 1}
+                  onClick={() => void loadReviews(revMeta.page - 1)}
+                >
+                  &lt;
+                </button>
+                <span>{revMeta.page}/{revMeta.totalPages}</span>
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={revMeta.page >= revMeta.totalPages}
+                  onClick={() => void loadReviews(revMeta.page + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
             <div className="review-list">
               {reviews.map((review) => (
                 <div key={review.id} className="review-item">
@@ -294,20 +388,35 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <>
-                      <div className="review-header">
-                        <div style={{display: "flex", alignItems: "center", gap: 6}}>
-                          <div className="user-avatar-sm">
+                      <div className="review-header" style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flex: 1 }}>
+                          <div className="user-avatar-sm" style={{ flexShrink: 0 }}>
                             {(user.displayName || user.username || "?")[0].toUpperCase()}
                           </div>
-                          <span className="review-author">{user.displayName || user.username}</span>
+                          <span className="review-author" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {user.displayName || user.username}
+                          </span>
                         </div>
                         <Link
                           to={`/details/${review.appleTrackId}?focusReview=${review.id}`}
-                          style={{ color: "var(--fg-primary)", fontWeight: 600, fontSize: 13, marginLeft: 12 }}
+                          style={{
+                            color: "var(--fg-primary)",
+                            fontWeight: 600,
+                            fontSize: 13,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: "30%",
+                            flexShrink: 1,
+                            textAlign: "right",
+                            display: "inline-block",
+                            verticalAlign: "middle"
+                          }}
+                          title={review.trackName || `Track #${review.appleTrackId}`}
                         >
-                          Track #{review.appleTrackId}
+                          {review.trackName || `Track #${review.appleTrackId}`}
                         </Link>
-                        <span className="review-rating">★ {review.rating}/5</span>
+                        <span className="review-rating" style={{ flexShrink: 0, whiteSpace: "nowrap" }}>★ {review.rating}/5</span>
                       </div>
                       <p className="review-text">{review.text}</p>
                       <div className="actions-row" style={{ marginTop: 8 }}>
@@ -336,7 +445,26 @@ export default function ProfilePage() {
 
           {/* Following */}
           <div className="card">
-            <div className="card-title">Following ({following.length})</div>
+            <div className="card-header">
+              <div className="card-title">Following ({followingMeta.total})</div>
+              <div className="pagination-controls">
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={followingMeta.page <= 1}
+                  onClick={() => void loadFollowing(user.id, followingMeta.page - 1)}
+                >
+                  &lt;
+                </button>
+                <span>{followingMeta.page}/{followingMeta.totalPages}</span>
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={followingMeta.page >= followingMeta.totalPages}
+                  onClick={() => void loadFollowing(user.id, followingMeta.page + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
             <div className="track-list">
               {following.map((item) => (
                 <div key={item.id} className="user-row">
@@ -359,7 +487,26 @@ export default function ProfilePage() {
 
           {/* Followers */}
           <div className="card">
-            <div className="card-title">Followers ({followers.length})</div>
+            <div className="card-header">
+              <div className="card-title">Followers ({followerMeta.total})</div>
+              <div className="pagination-controls">
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={followerMeta.page <= 1}
+                  onClick={() => void loadFollowers(user.id, followerMeta.page - 1)}
+                >
+                  &lt;
+                </button>
+                <span>{followerMeta.page}/{followerMeta.totalPages}</span>
+                <button
+                  className="btn-ghost btn-sm"
+                  disabled={followerMeta.page >= followerMeta.totalPages}
+                  onClick={() => void loadFollowers(user.id, followerMeta.page + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
             <div className="track-list">
               {followers.map((item) => (
                 <div key={item.id} className="user-row">

@@ -1,6 +1,3 @@
-﻿/* ============================================================
-   Music Share -Flat Blue Design System (Spotify-style Layout)
-   ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -60,9 +57,6 @@ a { color: inherit; text-decoration: none; }
 a:hover { color: var(--fg-primary); }
 button, input, textarea, select { font: inherit; }
 
-/* ============================================================
-   App Shell -Sidebar + Content
-   ============================================================ */
 
 .app-shell {
   display: flex;
@@ -263,9 +257,6 @@ button, input, textarea, select { font: inherit; }
   max-width: calc(100vw - var(--sidebar-w));
 }
 
-/* ============================================================
-   Typography
-   ============================================================ */
 
 h1 {
   font-size: 30px;
@@ -299,9 +290,6 @@ h3 {
   margin-top: 4px;
 }
 
-/* ============================================================
-   Cards
-   ============================================================ */
 
 .card {
   background: var(--bg-surface);
@@ -322,9 +310,32 @@ h3 {
   margin-bottom: 12px;
 }
 
-/* ============================================================
-   Stat pills (profile summary)
-   ============================================================ */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header .card-title {
+  margin-bottom: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+
+.pagination-controls button {
+  padding: 2px 8px;
+  min-height: 24px;
+  line-height: 1;
+}
+
 
 .stat-row {
   display: flex;
@@ -357,9 +368,6 @@ h3 {
   letter-spacing: 0.5px;
 }
 
-/* ============================================================
-   Forms
-   ============================================================ */
 
 .form-grid {
   display: grid;
@@ -412,9 +420,6 @@ select option {
   color: var(--fg-primary);
 }
 
-/* ============================================================
-   Buttons
-   ============================================================ */
 
 button {
   display: inline-flex;
@@ -493,9 +498,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   cursor: pointer;
 }
 
-/* ============================================================
-   Track rows
-   ============================================================ */
 
 .track-list { display: grid; gap: 2px; }
 
@@ -564,9 +566,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   flex-shrink: 0;
 }
 
-/* ============================================================
-   Review items
-   ============================================================ */
 
 .review-list { display: grid; gap: 1px; }
 
@@ -581,9 +580,13 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .review-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 8px;
+  min-width: 0; /* Allow header to shrink */
+}
+
+.review-header > div:first-child {
+  flex-shrink: 0; /* Don't shrink user info */
 }
 
 .review-author {
@@ -653,6 +656,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 14.5px;
   color: var(--fg-secondary);
   line-height: 1.55;
+  word-break: break-word; /* Fix long strings overflowing */
+  overflow-wrap: anywhere;
 }
 
 .review-focus {
@@ -661,9 +666,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding-left: 9px;
 }
 
-/* ============================================================
-   Playlist items
-   ============================================================ */
 
 .playlist-item {
   padding: 12px;
@@ -714,9 +716,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-top: 1px solid var(--border);
 }
 
-/* ============================================================
-   User / follow rows
-   ============================================================ */
 
 .user-row {
   display: flex;
@@ -757,9 +756,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--fg-muted);
 }
 
-/* ============================================================
-   Tags / badges
-   ============================================================ */
 
 .tag {
   display: inline-block;
@@ -776,9 +772,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--accent);
 }
 
-/* ============================================================
-   Actions row
-   ============================================================ */
 
 .actions-row {
   display: flex;
@@ -806,9 +799,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--fg-muted);
 }
 
-/* ============================================================
-   Search bar
-   ============================================================ */
 
 .search-bar {
   display: flex;
@@ -841,9 +831,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding-left: 38px;
 }
 
-/* ============================================================
-   Auth pages (login / register)
-   ============================================================ */
 
 .auth-wrapper {
   display: flex;
@@ -904,9 +891,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--fg-muted);
 }
 
-/* ============================================================
-   Hero / home banner
-   ============================================================ */
 
 .home-hero {
   background: var(--bg-raised);
@@ -937,9 +921,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin-top: 8px;
 }
 
-/* ============================================================
-   Section grid (two-col home layout)
-   ============================================================ */
 
 .home-grid {
   display: grid;
@@ -951,9 +932,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .home-grid { grid-template-columns: 1fr; }
 }
 
-/* ============================================================
-   Detail page header
-   ============================================================ */
 
 .detail-header {
   display: flex;
@@ -982,9 +960,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--fg-muted);
 }
 
-/* ============================================================
-   Profile header
-   ============================================================ */
 
 .profile-header {
   display: flex;
@@ -1029,9 +1004,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin-top: 6px;
 }
 
-/* ============================================================
-   Admin table
-   ============================================================ */
 
 .admin-row {
   display: flex;
@@ -1045,9 +1017,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .admin-row:hover { background: var(--bg-hover); }
 
-/* ============================================================
-   Feedback messages
-   ============================================================ */
 
 .muted         { color: var(--fg-muted); }
 .small-text    { font-size: 13px; }
@@ -1093,9 +1062,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   }
 }
 
-/* ============================================================
-   Loading spinner
-   ============================================================ */
 
 .loading-text {
   color: var(--fg-muted);
@@ -1103,9 +1069,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding: 16px 0;
 }
 
-/* ============================================================
-   Divider
-   ============================================================ */
 
 .divider {
   height: 1px;
@@ -1113,9 +1076,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin: 16px 0;
 }
 
-/* ============================================================
-   Responsive
-   ============================================================ */
 
 @media (max-width: 768px) {
   .sidebar {

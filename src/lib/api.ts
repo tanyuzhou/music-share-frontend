@@ -58,6 +58,9 @@ export type Review = {
     username: string;
     displayName: string;
   };
+  trackName?: string;
+  artistName?: string;
+  artworkUrl100?: string;
 };
 
 export type Playlist = {
