@@ -2,34 +2,48 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api, type HomeMyFeed, type HomePublicFeed } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function HomePage() {
   const { user } = useAuth();
   const [publicFeed, setPublicFeed] = useState<HomePublicFeed | null>(null);
   const [myFeed, setMyFeed] = useState<HomeMyFeed | null>(null);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
-      const publicResp = await api.getHomePublicFeed();
-      if (publicResp.code === 0) {
-        setPublicFeed(publicResp.data);
-      } else {
-        setMessage(publicResp.msg || "Failed to load home feed");
-      }
-
-      if (user) {
-        const myResp = await api.getHomeMyFeed();
-        if (myResp.code === 0) {
-          setMyFeed(myResp.data);
+      setLoading(true);
+      try {
+        const publicResp = await api.getHomePublicFeed();
+        if (publicResp.code === 0) {
+          setPublicFeed(publicResp.data);
+        } else {
+          setMessage(publicResp.msg || "Failed to load home feed");
         }
-      } else {
-        setMyFeed(null);
+
+        if (user) {
+          const myResp = await api.getHomeMyFeed();
+          if (myResp.code === 0) {
+            setMyFeed(myResp.data);
+          }
+        } else {
+          setMyFeed(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setMessage("An error occurred while loading the feed.");
+      } finally {
+        setLoading(false);
       }
     };
 
     void loadData();
   }, [user?.id]);
+
+  if (loading) {
+    return <LoadingSpinner fullPage message="Loading feeds..." />;
+  }
 
   return (
     <section>

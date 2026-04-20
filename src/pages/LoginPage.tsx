@@ -55,8 +55,8 @@ export default function LoginPage() {
 
           {message && <p className="error-text">{message}</p>}
 
-          <button id="login-submit" type="submit" disabled={loading} style={{ marginTop: 4 }}>
-            {loading ? "Logging in…" : "Log In"}
+          <button id="login-submit" type="submit" disabled={loading} style={{ marginTop: 4, minWidth: 100 }}>
+            {loading ? <div className="spinner spinner-sm" style={{borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff"}} /> : "Log In"}
           </button>
         </form>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api, type User } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { formatRoleLabel } from "../lib/roleLabel";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 type AdminUser = User & { createdAt?: string };
 
@@ -13,13 +14,16 @@ export default function AdminUsersPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const resp = await api.adminListUsers();
-    setLoading(false);
-    if (resp.code !== 0) {
-      setMessage({ type: "error", text: resp.msg || "Failed to load users" });
-      return;
+    try {
+      const resp = await api.adminListUsers();
+      if (resp.code !== 0) {
+        setMessage({ type: "error", text: resp.msg || "Failed to load users" });
+        return;
+      }
+      setUsers(resp.data.list as AdminUser[]);
+    } finally {
+      setLoading(false);
     }
-    setUsers(resp.data.list as AdminUser[]);
   };
 
   useEffect(() => {
@@ -61,7 +65,7 @@ export default function AdminUsersPage() {
         <div key={`${message.type}-${message.text}`} className={`feedback-bar ${message.type}`}>{message.text}</div>
       )}
 
-      {loading && <p className="loading-text">Loading…</p>}
+      {loading && <LoadingSpinner fullPage message="Loading users..." />}
 
       <div className="card">
         <div className="card-title">All Users ({users.length})</div>

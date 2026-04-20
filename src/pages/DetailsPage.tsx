@@ -2,6 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { api, type Playlist, type Review, type Track } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 async function checkTrackFavorited(trackId: number) {
   const limit = 50;
@@ -183,7 +184,7 @@ export default function DetailsPage() {
         </div>
       )}
 
-      {loading && <p className="loading-text">Loading…</p>}
+      {loading && <LoadingSpinner fullPage message="Loading track details..." />}
 
       {/* Track header */}
       {track && (

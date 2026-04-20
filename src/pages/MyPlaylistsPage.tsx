@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, type Playlist } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function MyPlaylistsPage() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -11,13 +12,16 @@ export default function MyPlaylistsPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const result = await api.getMyPlaylists();
-    setLoading(false);
-    if (result.code !== 0) {
-      setMessage(result.msg || "Failed to load playlists");
-      return;
+    try {
+      const result = await api.getMyPlaylists();
+      if (result.code !== 0) {
+        setMessage(result.msg || "Failed to load playlists");
+        return;
+      }
+      setPlaylists(result.data.list);
+    } finally {
+      setLoading(false);
     }
-    setPlaylists(result.data.list);
   };
 
   useEffect(() => {
@@ -96,7 +100,7 @@ export default function MyPlaylistsPage() {
         </form>
       </div>
 
-      {loading && <p className="loading-text">Loading…</p>}
+      {loading && <LoadingSpinner fullPage message="Loading your playlists..." />}
 
       {/* Playlists list */}
       <div className="card">

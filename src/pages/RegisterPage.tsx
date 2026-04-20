@@ -77,8 +77,8 @@ export default function RegisterPage() {
 
           {message && <p className="error-text">{message}</p>}
 
-          <button id="register-submit" type="submit" disabled={loading} style={{ marginTop: 4 }}>
-            {loading ? "Submitting…" : "Create Account"}
+          <button id="register-submit" type="submit" disabled={loading} style={{ marginTop: 4, minWidth: 100 }}>
+            {loading ? <div className="spinner spinner-sm" style={{borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff"}} /> : "Create Account"}
           </button>
         </form>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, type Favorite, type FollowUser, type MyProfile, type Playlist, type Review } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<MyProfile | null>(null);
@@ -178,7 +179,7 @@ export default function ProfilePage() {
       </div>
 
       {message && <div key={message} className="feedback-bar error">{message}</div>}
-      {loading && <p className="loading-text">Loading…</p>}
+      {loading && <LoadingSpinner fullPage message="Loading your profile..." />}
 
       {user && (
         <>
@@ -274,8 +275,8 @@ export default function ProfilePage() {
                 </select>
               </label>
               <div>
-                <button type="submit" disabled={saving}>
-                  {saving ? "Saving…" : "Save Changes"}
+                <button type="submit" disabled={saving} style={{ minWidth: 100 }}>
+                  {saving ? <div className="spinner spinner-sm" style={{borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff"}} /> : "Save Changes"}
                 </button>
                 {saveFeedback && (
                   <p className={saveFeedback.type === "success" ? "success-text" : "error-text"}>

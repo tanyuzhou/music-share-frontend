@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const PROTECTED_SUPER_ADMIN_USERNAME = "music_share_super_admin";
 
@@ -11,15 +12,21 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
-      const resp = await api.getMyProfile();
-      if (resp.code === 0) {
-        setUsername(resp.data.user.username || "");
-        setFavoritesVisibility(resp.data.user.favoritesVisibility);
-        setBio(resp.data.user.bio || "");
-        setFavoriteGenre(resp.data.user.favoriteGenre || "");
+      setLoading(true);
+      try {
+        const resp = await api.getMyProfile();
+        if (resp.code === 0) {
+          setUsername(resp.data.user.username || "");
+          setFavoritesVisibility(resp.data.user.favoritesVisibility);
+          setBio(resp.data.user.bio || "");
+          setFavoriteGenre(resp.data.user.favoriteGenre || "");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     void loadData();
@@ -57,6 +64,8 @@ export default function SettingsPage() {
       {message && (
         <div key={`${message.type}-${message.text}`} className={`feedback-bar ${message.type}`}>{message.text}</div>
       )}
+
+      {loading && <LoadingSpinner fullPage message="Loading settings..." />}
 
       {/* Privacy & preferences */}
       <div className="card">

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api, type FollowUser, type Playlist, type PublicUser } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function PublicProfilePage() {
   const { profileId } = useParams();
@@ -116,7 +117,7 @@ export default function PublicProfilePage() {
       </div>
 
       {message && <div key={message} className="feedback-bar error">{message}</div>}
-      {loading && <p className="loading-text">Loading…</p>}
+      {loading && <LoadingSpinner fullPage message="Loading public profile..." />}
 
       {user && (
         <>
@@ -140,7 +141,7 @@ export default function PublicProfilePage() {
                 disabled={actionLoading}
                 className={isFollowing ? "btn-ghost" : ""}
               >
-                {actionLoading ? "…" : isFollowing ? "Unfollow" : "Follow"}
+                {actionLoading ? <div className="spinner spinner-sm" style={{borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff"}} /> : isFollowing ? "Unfollow" : "Follow"}
               </button>
             )}
           </div>

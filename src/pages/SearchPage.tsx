@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, type Track } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function formatDuration(ms?: number) {
   if (!ms) return "--:--";
@@ -127,8 +128,8 @@ export default function SearchPage() {
             placeholder="Search songs, artists, albums…"
           />
         </div>
-        <button id="search-submit" type="submit" disabled={loading}>
-          {loading ? "Searching…" : "Search"}
+        <button id="search-submit" type="submit" disabled={loading} style={{ minWidth: 100 }}>
+          {loading ? <div className="spinner spinner-sm" style={{borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff"}} /> : "Search"}
         </button>
       </form>
 
@@ -138,45 +139,55 @@ export default function SearchPage() {
       {(tracks.length > 0 || loading) && (
         <div className="card">
           <div className="card-title">Results</div>
-          <div className="track-list">
-            {tracks.map((track) => (
-              <div className="track-row" key={track.trackId}>
-                <div className="track-main">
-                  {track.artworkUrl100 && (
-                    <img className="cover" src={track.artworkUrl100} alt={track.trackName} />
-                  )}
-                  <div className="track-info">
-                    <div className="track-name">{track.trackName}</div>
-                    <div className="track-meta">
-                      {track.artistName}
-                      {track.releaseDate
-                        ? ` · ${new Date(track.releaseDate).getFullYear()}`
-                        : ""}
-                      {" · "}
-                      {formatDuration(track.trackTimeMillis)}
-                    </div>
-                  </div>
-                </div>
-                <div className="actions-row">
-                  <Link to={`/details/${track.trackId}`}>
-                    <button type="button" className="btn-ghost btn-sm">Details</button>
-                  </Link>
-                  {track.trackViewUrl && (
-                    <a href={track.trackViewUrl} target="_blank" rel="noreferrer">
-                      <button type="button" className="btn-ghost btn-sm">Apple Music ↗</button>
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          
           {!loading && tracks.length === 0 && (
-            <p className="muted">No results.</p>
+            <p className="muted">No results found.</p>
           )}
 
-          <div ref={loaderRef} />
-          {loading && tracks.length > 0 && <p className="muted" style={{ textAlign: "center" }}>Loading more…</p>}
-          {!hasMore && tracks.length > 0 && <p className="muted">No more results.</p>}
+          {tracks.length > 0 && (
+            <div className="track-list">
+              {tracks.map((track) => (
+                <div className="track-row" key={track.trackId}>
+                  <div className="track-main">
+                    {track.artworkUrl100 && (
+                      <img className="cover" src={track.artworkUrl100} alt={track.trackName} />
+                    )}
+                    <div className="track-info">
+                      <div className="track-name">{track.trackName}</div>
+                      <div className="track-meta">
+                        {track.artistName}
+                        {track.releaseDate
+                          ? ` · ${new Date(track.releaseDate).getFullYear()}`
+                          : ""}
+                        {" · "}
+                        {formatDuration(track.trackTimeMillis)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="actions-row">
+                    <Link to={`/details/${track.trackId}`}>
+                      <button type="button" className="btn-ghost btn-sm">Details</button>
+                    </Link>
+                    {track.trackViewUrl && (
+                      <a href={track.trackViewUrl} target="_blank" rel="noreferrer">
+                        <button type="button" className="btn-ghost btn-sm">Apple Music ↗</button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div ref={loaderRef} style={{ height: 20 }} />
+          
+          {loading && (
+            <div style={{ padding: "20px 0" }}>
+              <LoadingSpinner message={tracks.length > 0 ? "Loading more..." : "Searching..."} />
+            </div>
+          )}
+          
+          {!hasMore && tracks.length > 0 && <p className="muted" style={{ textAlign: "center", marginTop: 20 }}>No more results.</p>}
         </div>
       )}
 
