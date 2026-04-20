@@ -147,8 +147,15 @@ export default function MyPlaylistsPage() {
                 </p>
               )}
               {item.trackItems.map((track) => (
-                <div key={track.trackId} className="track-row">
-                  <div className="track-info">
+                <div key={track.trackId} className="track-row" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {track.artworkUrl100 && (
+                    <img
+                      src={track.artworkUrl100}
+                      alt="artwork"
+                      style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', marginRight: 10 }}
+                    />
+                  )}
+                  <div className="track-info" style={{ flex: 1 }}>
                     <Link
                       to={`/details/${track.trackId}`}
                       className="track-name"
@@ -157,6 +164,9 @@ export default function MyPlaylistsPage() {
                       {track.trackName}
                     </Link>
                     <div className="track-meta">{track.artistName}</div>
+                    {track.collectionName && (
+                      <div className="detail-album">{track.collectionName}</div>
+                    )}
                   </div>
                   <button
                     type="button"

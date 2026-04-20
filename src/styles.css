@@ -499,7 +499,13 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 
-.track-list { display: grid; gap: 2px; }
+.track-list {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
 .track-row {
   display: flex;
@@ -509,6 +515,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-radius: var(--radius-sm);
   transition: background var(--transition);
   gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .track-row:hover { background: var(--bg-hover); }
@@ -518,10 +528,20 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 0%;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.track-info { min-width: 0; }
+.track-info {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 
 .track-name {
   font-size: 15px;
@@ -530,6 +550,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
 }
 
 .track-meta {
@@ -538,6 +560,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .search-page .track-name {
@@ -567,12 +590,22 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 
-.review-list { display: grid; gap: 1px; }
+.review-list {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
 .review-item {
   padding: 14px 12px;
   border-radius: var(--radius-sm);
   transition: background var(--transition);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .review-item:hover { background: var(--bg-hover); }
@@ -583,6 +616,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   gap: 12px;
   margin-bottom: 8px;
   min-width: 0; /* Allow header to shrink */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .review-header > div:first-child {
@@ -658,6 +695,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   line-height: 1.55;
   word-break: break-word; /* Fix long strings overflowing */
   overflow-wrap: anywhere;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .review-focus {
