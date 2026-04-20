@@ -112,12 +112,23 @@ export default function MyPlaylistsPage() {
 
         {playlists.map((item) => (
           <div key={item.id} className="playlist-item">
-            <div className="playlist-header">
-              <div>
+            <div className="playlist-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <span className="playlist-title">{item.title}</span>
-                <div className="playlist-meta">{item.description || "No description"}</div>
+                <div
+                  className="playlist-meta"
+                  style={{
+                    wordBreak: 'break-word',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%'
+                  }}
+                >
+                  {item.description || "No description"}
+                </div>
               </div>
-              <div className="actions-row">
+              <div className="actions-row" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                 <span className={`playlist-badge${item.isPublic ? "" : " private"}`}>
                   {item.isPublic ? "Public" : "Private"}
                 </span>

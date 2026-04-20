@@ -172,6 +172,15 @@ export default function DetailsPage() {
     }
   };
 
+  const handleModerateReview = async (reviewId: string, status: "PUBLISHED" | "HIDDEN_BY_MOD") => {
+    const reason = status === "HIDDEN_BY_MOD" ? window.prompt("Reason for hiding this review?") || "Moderation" : "";
+    const result = await api.moderateReview(reviewId, status, reason);
+    setMessage(result.msg);
+    if (result.code === 0) {
+      await loadData();
+    }
+  };
+
   return (
     <section>
       <div className="page-header">
@@ -318,17 +327,51 @@ export default function DetailsPage() {
                   </div>
                 </div>
               ) : (
-                <p className="review-text">{review.text}</p>
+                <div style={{ opacity: review.status === "HIDDEN_BY_MOD" ? 0.5 : 1 }}>
+                  {review.status === "HIDDEN_BY_MOD" && (
+                    <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 700, color: "var(--warning)" }}>
+                      ⚠️ HIDDEN BY MODERATOR {review.moderationReason ? `— ${review.moderationReason}` : ""}
+                    </div>
+                  )}
+                  <p className="review-text">{review.text}</p>
+                </div>
               )}
 
-              {user && review.author.id === user.id && editingReviewId !== review.id && (
+              {user && (
                 <div className="actions-row" style={{ marginTop: 8 }}>
-                  <button type="button" className="btn-ghost btn-sm" onClick={() => startEditReview(review)}>
-                    Edit
-                  </button>
-                  <button type="button" className="btn-danger btn-sm" onClick={() => void removeReview(review.id)}>
-                    Delete
-                  </button>
+                  {/* Author actions */}
+                  {review.author.id === user.id && editingReviewId !== review.id && (
+                    <>
+                      <button type="button" className="btn-ghost btn-sm" onClick={() => startEditReview(review)}>
+                        Edit
+                      </button>
+                      <button type="button" className="btn-danger btn-sm" onClick={() => void removeReview(review.id)}>
+                        Delete
+                      </button>
+                    </>
+                  )}
+
+                  {/* Moderator / Admin actions */}
+                  {(user.role === "MODERATOR" || user.role === "SUPER_ADMIN") && (
+                    <>
+                      {review.status === "PUBLISHED" ? (
+                        <button type="button" className="btn-warning btn-sm" onClick={() => void handleModerateReview(review.id, "HIDDEN_BY_MOD")}>
+                          Hide
+                        </button>
+                      ) : (
+                        <button type="button" className="btn-ghost btn-sm" onClick={() => void handleModerateReview(review.id, "PUBLISHED")}>
+                          Restore
+                        </button>
+                      )}
+                    </>
+                  )}
+
+                  {/* Super Admin extra actions */}
+                  {user.role === "SUPER_ADMIN" && review.author.id !== user.id && (
+                    <button type="button" className="btn-danger btn-sm" onClick={() => void removeReview(review.id)}>
+                      Force Delete
+                    </button>
+                  )}
                 </div>
               )}
             </div>

@@ -84,13 +84,35 @@ export default function HomePage() {
           <div className="card-title">Latest Public Playlists</div>
           <div className="track-list">
             {publicFeed?.latestPublicPlaylists.map((item) => (
-              <div key={item.id} className="track-row">
-                <div>
+              <div key={item.id} className="track-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+                {/* Left: Playlist title and description */}
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="track-name">{item.title}</div>
-                  <div className="track-meta">
-                    by {item.owner.displayName || item.owner.username}
+                  <div
+                    className="track-meta"
+                    style={{
+                      color: "var(--muted)",
+                      fontSize: 13,
+                      marginTop: 2,
+                      maxWidth: '60%',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: 'block'
+                    }}
+                  >
+                    {item.description || <span className="muted">No description</span>}
                   </div>
                 </div>
+                {/* Right: User avatar and nickname, link to profile */}
+                <Link to={`/profile/${item.owner.id}`} style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: 8, flexShrink: 0 }}>
+                  <div className="user-avatar-sm">
+                    {(item.owner.displayName || item.owner.username || "?")[0].toUpperCase()}
+                  </div>
+                  <span style={{ color: "var(--fg-primary)", fontWeight: 500 }}>
+                    {item.owner.displayName || item.owner.username}
+                  </span>
+                </Link>
               </div>
             ))}
             {publicFeed && publicFeed.latestPublicPlaylists.length === 0 && (
@@ -160,7 +182,7 @@ export default function HomePage() {
               {myFeed.myRecentReviews.map((item) => (
                 <div key={item.id} className="review-item">
                   <div className="review-header">
-                    <span className="muted">My review</span>
+                    <span className="muted"></span>
                     <div className="review-side-info">
                       <div className="review-side-track">
                         {item.artworkUrl100 && (

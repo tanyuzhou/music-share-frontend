@@ -192,6 +192,12 @@ export const api = {
       method: "DELETE"
     }),
 
+  moderateReview: (reviewId: string, status: "PUBLISHED" | "HIDDEN_BY_MOD", reason = "") =>
+    request<{ review: Review }>(`/mod/reviews/${reviewId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, reason })
+    }),
+
   getMyReviews: (page = 1, limit = 20) =>
     request<{ list: Review[]; page: number; limit: number; total: number }>(
       `/users/me/reviews?page=${page}&limit=${limit}`
